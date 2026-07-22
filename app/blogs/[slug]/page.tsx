@@ -24,10 +24,11 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
   const { slug } = await params;
   const post = await getPost(slug);
 
-  async function Delete() {
-    const supabase = await createClient();
-    await supabase.from("posts").delete().eq("slug", slug);
-    redirect("/");
+  async function HandleDelete(){
+    "use server"
+    const supabase = await createClient()
+    await supabase.from("posts").delete().eq("slug",slug)
+    redirect("/")
   }
 
   if (!post) {
@@ -56,7 +57,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
               <h1 className="text-4xl md:text-6xl font-bold tracking-tight leading-[1.1]">
                 {post.title}
               </h1>
-              <Button variant="destructive" onClick={Delete}>Delete Post</Button>
+              <Button variant="destructive" onClick={HandleDelete}>Delete Post</Button>
             </div>
 
             <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground font-medium">
