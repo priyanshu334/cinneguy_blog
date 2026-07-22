@@ -44,47 +44,46 @@ export default function CreatePostPage() {
         setSlug(generatedSlug);
     };
 
-    const handlePublish = async () => {
-        if (!title || !slug || !content) {
-            toast.error("Required fields missing", {
-                description: "Please provide an essay title, slug, and content body."
-            });
-            return;
-        }
-
-        setLoading(true);
-        const supabase = createClient();
-
-        const selectedCat = CINEMA_CATEGORIES.find((c) => c.name === category);
-
-        const { error } = await supabase.from("posts").insert([
-            {
-                title,
-                slug,
-                excerpt,
-                content,
-                category,
-                tag: selectedCat?.tag || "FILM ESSAY",
-                published: true,
-            }
-        ]);
-
-        if (error) {
-            toast.error("Publication failed", {
-                description: error.message
-            });
-            setLoading(false);
-            return;
-        }
-
-        toast.success("Film essay published!", {
-            description: "Your cinematic analysis is now live."
+const handlePublish = async () => {
+    if (!title || !slug || !content) {
+        toast.error("Required fields missing", {
+            description: "Please provide an essay title, slug, and content body."
         });
+        return;
+    }
 
-        router.push(`/blogs/${slug}`);
-        router.refresh();
-    };
+    setLoading(true);
+    const supabase = createClient();
 
+    const selectedCat = CINEMA_CATEGORIES.find((c) => c.name === category);
+
+    // Save selectedCat?.tag directly into the category column
+    const { error } = await supabase.from("posts").insert([
+        {
+            title,
+            slug,
+            excerpt,
+            content,
+            category: selectedCat?.tag || "FILM ESSAY", // Uses existing 'category' column!
+            published: true,
+        }
+    ]);
+
+    if (error) {
+        toast.error("Publication failed", {
+            description: error.message
+        });
+        setLoading(false);
+        return;
+    }
+
+    toast.success("Film essay published!", {
+        description: "Your cinematic analysis is now live."
+    });
+
+    router.push(`/blogs/${slug}`);
+    router.refresh();
+};
     return (
         <section className="py-12 md:py-20 animate-in text-foreground">
             <Container>
