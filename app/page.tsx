@@ -1,65 +1,108 @@
-import Image from "next/image";
+import Container from "@/components/layout/container";
+import Link from "next/link";
+import { createClient } from "@/lib/supabase/server";
+import { BlogSearch } from "@/components/blog/blog-search";
+import { Separator } from "@/components/ui/separator";
 
-export default function Home() {
+interface SearchParams {
+  search?: string;
+}
+
+export default async function BlogPage({
+  searchParams,
+}: {
+  searchParams: Promise<SearchParams>;
+}) {
+  const { search } = await searchParams;
+  const supabase = await createClient();
+
+  let query = supabase
+    .from("posts")
+    .select("*")
+    .eq("published", true)
+    .order("created_at", { ascending: false });
+
+  if (search) {
+    query = query.ilike("title", `%${search}%`);
+  }
+
+  const { data: posts } = await query;
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <section className="py-12 md:py-24">
+      <Container>
+        <div className="max-w-4xl mx-auto">
+          {/* Header */}
+          <header className="mb-16 space-y-8">
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+              <div className="space-y-4">
+                <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
+                  Innate<span className="italic text-amber-700">Void</span>
+                </h1>
+                <p className="text-muted-foreground text-lg font-light max-w-lg leading-relaxed">
+                  Deep dives into computing, systems architecture, and the art of structured learning.
+                </p>
+              </div>
+              <BlogSearch />
+            </div>
+            <Separator className="bg-border/50" />
+          </header>
+
+          {/* Posts List */}
+          <div className="grid gap-16">
+            {posts && posts.length > 0 ? (
+              posts.map((post) => (
+                <Link
+                  key={post.slug}
+                  href={`/blogs/${post.slug}`}
+                  className="group block"
+                >
+                  <article className="grid md:grid-cols-[1fr_2fr] gap-8 items-start transition-all duration-300">
+                    {/* Metadata column */}
+                    <div className="flex flex-col gap-2 pt-1.5">
+                      <div className="flex items-center gap-3 text-[12px] uppercase tracking-[0.2em] text-muted-foreground font-semibold">
+                        <span className="text-primary">{post.tag}</span>
+                        <span className="h-px w-6 bg-border" />
+                      </div>
+                      <time className="text-sm text-muted-foreground/60 font-medium">
+                        {new Date(post.created_at).toLocaleDateString('en-US', {
+                          month: 'long',
+                          day: 'numeric',
+                          year: 'numeric'
+                        })}
+                      </time>
+                    </div>
+
+                    {/* Content column */}
+                    <div className="space-y-3">
+                      <h2 className="text-2xl md:text-3xl font-bold tracking-tight group-hover:text-primary transition-colors duration-300">
+                        {post.title}
+                      </h2>
+                      <p className="text-muted-foreground leading-relaxed font-light text-[17px] line-clamp-3 group-hover:text-foreground transition-colors duration-300">
+                        {post.excerpt}
+                      </p>
+
+                      <div className="pt-4 flex items-center gap-2 text-sm font-semibold text-primary/80 group-hover:text-primary transition-colors">
+                        Read full insight
+                        <span className="translate-x-0 group-hover:translate-x-1 transition-transform duration-300">
+                          →
+                        </span>
+                      </div>
+                    </div>
+                  </article>
+                </Link>
+              ))
+            ) : (
+              <div className="py-24 text-center space-y-4 border-2 border-dashed rounded-2xl border-muted">
+                <p className="text-xl text-muted-foreground">No insights found matching your search.</p>
+                <Link href="/" className="text-primary font-medium hover:underline">
+                  Clear all filters
+                </Link>
+              </div>
+            )}
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+      </Container>
+    </section>
   );
 }
