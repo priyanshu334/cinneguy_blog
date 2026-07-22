@@ -6,6 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { createClient } from "@/lib/supabase/server";
 import { ArrowLeft, Clock, Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { DeletePostButton } from "@/components/blog/delete";
 
 async function getPost(slug: string) {
   const supabase = await createClient();
@@ -57,7 +58,7 @@ export default async function PostPage({ params }: { params: Promise<{ slug: str
               <h1 className="text-4xl md:text-6xl font-bold tracking-tight leading-[1.1]">
                 {post.title}
               </h1>
-              <Button variant="destructive" onClick={HandleDelete}>Delete Post</Button>
+              <DeletePostButton onDelete={() => deletePost(slug)} />
             </div>
 
             <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground font-medium">
