@@ -1,6 +1,5 @@
 import Container from "@/components/layout/container";
 import Link from "next/link";
-import { Github, Twitter, Linkedin, Youtube } from "lucide-react";
 
 export default function Footer() {
     return (
@@ -19,13 +18,10 @@ export default function Footer() {
                         </p>
                         <div className="flex items-center gap-4 pt-2">
                             <Link href="#" className="text-muted-foreground hover:text-primary transition-colors">
-                                <Github className="h-5 w-5" />
                             </Link>
                             <Link href="https://x.com/Priyans35353551" className="text-muted-foreground hover:text-primary transition-colors">
-                                <Twitter className="h-5 w-5" />
                             </Link>
                             <Link href="https://www.youtube.com/@innatevoid22" className="text-muted-foreground hover:text-primary transition-colors">
-                                <Youtube className="h-5 w-5" />
                             </Link>
                         </div>
                     </div>
