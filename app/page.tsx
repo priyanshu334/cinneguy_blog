@@ -48,7 +48,7 @@ export default async function BlogPage({
                 </div>
 
                 <h1 className="text-4xl md:text-6xl font-black tracking-tight font-serif italic">
-                  Innate<span className="not-italic text-amber-600 dark:text-amber-500">Void</span>
+                  Cine<span className="not-italic text-amber-600 dark:text-amber-500">guy</span>
                 </h1>
 
                 <p className="text-muted-foreground text-lg max-w-xl leading-relaxed font-light">
